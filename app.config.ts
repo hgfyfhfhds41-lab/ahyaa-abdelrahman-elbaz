@@ -26,6 +26,8 @@ const bundleId =
 const timestamp = bundleId.split(".").pop()?.replace(/^t/, "") ?? "";
 const schemeFromBundleId = `manus${timestamp}`;
 
+const configuredYouTubeKey = process.env.YOUTUBE_API_KEY && process.env.YOUTUBE_API_KEY !== "YOUTUBE_API_KEY" ? process.env.YOUTUBE_API_KEY : "";
+
 const env = {
   // App branding - update these values directly (do not use env vars)
   appName: "أحياء مع عبدالرحمن الباز",
@@ -41,7 +43,7 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   extra: {
-    youtubeApiKey: process.env.YOUTUBE_API_KEY ?? process.env.EXPO_PUBLIC_YOUTUBE_API_KEY ?? "",
+    youtubeApiKey: configuredYouTubeKey,
   },
   slug: env.appSlug,
   version: "1.0.0",
