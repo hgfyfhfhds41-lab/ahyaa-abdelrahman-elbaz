@@ -259,12 +259,12 @@
 
 ## مستودع محمد هلال وبناء GitHub Actions
 
-- [ ] فحص حساب GitHub واسم المستودع الحالي
-- [ ] إنشاء مستودع خاص جديد باسم mohamed-helal
-- [ ] تجهيز نسخة Git نظيفة بلا أسرار أو keystore
-- [ ] إضافة GitHub Actions لبناء Android داخل المستودع
-- [ ] إضافة توثيق YOUTUBE_API_KEY كـGitHub Secret
-- [ ] إضافة إعداد توقيع Android أو مسار Debug APK آمن
-- [ ] تشغيل TypeScript وVitest وLint قبل الرفع
-- [ ] رفع المشروع والتحقق من المستودع والـWorkflow
-- [ ] توثيق عدم ضمان تطابق المعاينة قبل اختبار APK فعلي
+- [x] فحص حساب GitHub واسم المستودع الحالي
+- [x] إنشاء مستودع خاص جديد باسم mohamed-helal
+- [x] تجهيز نسخة Git نظيفة بلا أسرار أو keystore
+- [x] إضافة GitHub Actions لبناء Android داخل المستودع
+- [x] إضافة توثيق YOUTUBE_API_KEY كـGitHub Secret
+- [x] إضافة إعداد توقيع Android أو مسار Debug APK آمن
+- [x] تشغيل TypeScript وVitest وLint قبل الرفع
+- [x] رفع المشروع والتحقق من المستودع والـWorkflow
+- [x] توثيق عدم ضمان تطابق المعاينة قبل اختبار APK فعلي
