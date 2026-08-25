@@ -46,6 +46,7 @@ export class YouTubeIntegration {
   }
   async fetchPlaylists(): Promise<YouTubePlaylist[]> { return collect("playlists", { part: "snippet,contentDetails", channelId: this.settings.channelId, maxResults: "50" }, item => ({ id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, itemCount: item.contentDetails?.itemCount })); }
   async fetchPlaylistItems(playlistId: string): Promise<YouTubePlaylistItem[]> { return collect("playlistItems", { part: "snippet,contentDetails", playlistId, maxResults: "50" }, item => ({ id: item.id, videoId: item.contentDetails.videoId, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, position: item.snippet.position, publishedAt: item.snippet.publishedAt })); }
+  async findVideoPlaylistContext(videoId: string): Promise<{ playlistId: string; items: YouTubePlaylistItem[] } | null> { const playlists = await this.fetchPlaylists(); for (const playlist of playlists) { const items = await this.fetchPlaylistItems(playlist.id); if (items.some(item => item.videoId === videoId)) return { playlistId: playlist.id, items }; } return null; }
   async fetchHomeData(): Promise<YouTubeHomeData> { const [channel, videos, playlists] = await Promise.all([this.fetchChannel(), this.fetchVideos(), this.fetchPlaylists()]); return { channel, videos, playlists }; }
 }
 export const youtube = new YouTubeIntegration();
