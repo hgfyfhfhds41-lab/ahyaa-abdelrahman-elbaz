@@ -32,9 +32,38 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "الرئيسية",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="videos"
+        options={{
+          title: "الفيديوهات",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="play.rectangle.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: "بحث",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="magnifyingglass" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="downloads"
+        options={{
+          title: "التنزيلات",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="arrow.down.circle.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: "المزيد",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="ellipsis.circle.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen name="playlists" options={{ href: null }} />
     </Tabs>
   );
 }
