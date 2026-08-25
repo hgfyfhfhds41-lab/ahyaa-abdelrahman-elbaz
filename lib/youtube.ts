@@ -1,7 +1,10 @@
+type ExpoConstantsShape = { expoConfig?: { extra?: { youtubeApiKey?: string } } };
+function readRuntimeApiKey() { const publicKey = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY; if (publicKey) return publicKey; try { return (require("expo-constants").default as ExpoConstantsShape).expoConfig?.extra?.youtubeApiKey ?? ""; } catch { return ""; } }
+
 export const OFFICIAL_CHANNEL_ID = "UCZJdmjp4Mt-wU7miDGMEOuA";
 export const OFFICIAL_CHANNEL_HANDLE = "@mr.abdelrahmanelbaz";
 const API_BASE = "https://www.googleapis.com/youtube/v3";
-const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY ?? "";
+const API_KEY = readRuntimeApiKey();
 const IS_DEV = typeof __DEV__ !== "undefined" && __DEV__;
 
 type ApiList<T> = { items?: T[]; nextPageToken?: string; error?: { message?: string; errors?: Array<{ reason?: string }> } };

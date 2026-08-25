@@ -40,6 +40,9 @@ const env = {
 
 const config: ExpoConfig = {
   name: env.appName,
+  extra: {
+    youtubeApiKey: process.env.YOUTUBE_API_KEY ?? process.env.EXPO_PUBLIC_YOUTUBE_API_KEY ?? "",
+  },
   slug: env.appSlug,
   version: "1.0.0",
   orientation: "portrait",
