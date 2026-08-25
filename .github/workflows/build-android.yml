@@ -51,12 +51,27 @@ jobs:
       - name: Install JavaScript dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Validate required YouTube secret
+      - name: Validate required build secrets
         run: |
-          if [ -z "$YOUTUBE_API_KEY" ]; then
-            echo "::error::Missing GitHub Actions Secret: YOUTUBE_API_KEY"
-            exit 1
+          missing=0
+          for name in YOUTUBE_API_KEY EXPO_PUBLIC_API_BASE_URL EXPO_PUBLIC_OAUTH_PORTAL_URL EXPO_PUBLIC_APP_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing GitHub Actions Secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+
+      - name: Prepare Android debug certificate identity
+        run: |
+          mkdir -p "$HOME/.android"
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" >/dev/null 2>&1
           fi
+          cert_sha1=$(keytool -list -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey | awk -F': ' '/SHA1:/{print $2; exit}' | tr -d ':' | tr '[:lower:]' '[:upper:]')
+          if [ -z "$cert_sha1" ]; then echo "::error::Unable to determine Android debug certificate SHA-1"; exit 1; fi
+          echo "ANDROID_CERT_SHA1=$cert_sha1" >> "$GITHUB_ENV"
+          echo "Android debug certificate SHA-1: $cert_sha1"
 
       - name: Validate TypeScript
         run: pnpm check

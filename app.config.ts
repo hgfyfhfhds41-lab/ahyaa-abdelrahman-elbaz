@@ -27,6 +27,7 @@ const timestamp = bundleId.split(".").pop()?.replace(/^t/, "") ?? "";
 const schemeFromBundleId = `manus${timestamp}`;
 
 const configuredYouTubeKey = process.env.YOUTUBE_API_KEY && process.env.YOUTUBE_API_KEY !== "YOUTUBE_API_KEY" ? process.env.YOUTUBE_API_KEY : "";
+const configuredAndroidCertSha1 = (process.env.ANDROID_CERT_SHA1 ?? "").replace(/:/g, "").toUpperCase();
 
 const env = {
   // App branding - update these values directly (do not use env vars)
@@ -43,7 +44,10 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   extra: {
-    youtubeApiKey: configuredYouTubeKey,
+          youtubeApiKey: configuredYouTubeKey,
+      androidPackage: bundleId,
+      androidCertSha1: configuredAndroidCertSha1,
+
   },
   slug: env.appSlug,
   version: "1.0.0",
