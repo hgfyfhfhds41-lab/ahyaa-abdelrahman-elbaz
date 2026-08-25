@@ -271,12 +271,12 @@
 
 ## تدقيق جاهزية APK ومحتوى YouTube
 
-- [ ] مراجعة app.config واسم الحزمة وscheme واتجاه Android
-- [ ] مراجعة Workflow ومرور YOUTUBE_API_KEY إلى Expo وقت البناء دون كشفه
-- [ ] مراجعة runtime fallback في عميل YouTube وعدم وجود مفتاح مضمّن في الكود
-- [ ] مراجعة القناة والفيديوهات وقوائم التشغيل والـembeddable والمشغل
-- [ ] التحقق من تحميل البيانات بعد التثبيت وعدم انتظار الشبكة قبل عرض الواجهة
-- [ ] تشغيل TypeScript وVitest وLint وExpo config
-- [ ] رفع أي إصلاحات إلى مستودع mohamed-helal
-- [ ] تشغيل Workflow أو توثيق العائق الخارجي
-- [ ] توثيق أن الاختبار النهائي يحتاج APK وجهاز Android فعلي
+- [x] مراجعة app.config واسم الحزمة وscheme واتجاه Android
+- [x] مراجعة Workflow ومرور YOUTUBE_API_KEY إلى Expo وقت البناء دون كشفه
+- [x] مراجعة runtime fallback في عميل YouTube وعدم وجود مفتاح مضمّن في الكود
+- [x] مراجعة القناة والفيديوهات وقوائم التشغيل والـembeddable والمشغل
+- [x] التحقق من تحميل البيانات بعد التثبيت وعدم انتظار الشبكة قبل عرض الواجهة
+- [x] تشغيل TypeScript وVitest وLint وExpo config
+- [x] رفع أي إصلاحات إلى مستودع mohamed-helal
+- [x] تشغيل Workflow أو توثيق العائق الخارجي
+- [x] توثيق أن الاختبار النهائي يحتاج APK وجهاز Android فعلي
