@@ -299,3 +299,13 @@
 - [x] تشغيل TypeScript وVitest وLint وExpo config
 - [x] حفظ نسخة جاهزة لبناء Expo داخل المنصة
 - [x] توثيق أن APK النهائي يحتاج تثبيتًا واختبارًا فعليًا
+
+## إصلاح وصول YouTube Secret إلى Expo Preview وAPK
+
+- [x] تحديد الفرق بين GitHub Repository Secret وSecret مشروع Expo
+- [x] توحيد أولوية YOUTUBE_API_KEY وEXPO_PUBLIC_YOUTUBE_API_KEY دون كشف القيم
+- [x] التأكد من حقن المفتاح في Expo extra وقت التهيئة والبناء
+- [x] منع اعتبار معاينة لا تحتوي Secret جاهزة لجلب YouTube
+- [x] إضافة اختبار آمن لمسار Environment Variable وExpo extra
+- [x] تشغيل TypeScript وVitest وLint وExpo config
+- [x] حفظ نسخة الإصلاح وتوثيق إعداد Secret داخل المنصة قبل Build
