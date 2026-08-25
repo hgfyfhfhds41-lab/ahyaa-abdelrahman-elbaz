@@ -28,6 +28,10 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const configuredYouTubeKey = process.env.YOUTUBE_API_KEY && process.env.YOUTUBE_API_KEY !== "YOUTUBE_API_KEY" ? process.env.YOUTUBE_API_KEY : "";
 const configuredAndroidCertSha1 = (process.env.ANDROID_CERT_SHA1 ?? "").replace(/:/g, "").toUpperCase();
+const isProductionBuild = process.env.NODE_ENV === "production" || process.env.EAS_BUILD === "true";
+if (isProductionBuild && !configuredYouTubeKey) {
+  throw new Error("YOUTUBE_API_KEY is required for an Android production build. Add it as a platform Secret before building.");
+}
 
 const env = {
   // App branding - update these values directly (do not use env vars)

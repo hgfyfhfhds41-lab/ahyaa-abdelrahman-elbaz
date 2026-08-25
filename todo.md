@@ -288,3 +288,14 @@
 - [ ] إضافة `EXPO_PUBLIC_APP_ID` إلى Repository Secrets
 - [ ] إعادة تشغيل Workflow بعد إضافة أسرار المصادقة
 - [ ] تنزيل APK واختباره على جهاز Android فعلي
+
+## Expo فقط وبناء المنصة
+
+- [x] مراجعة app.config وruntime Secret لمسار Expo داخل المنصة
+- [x] التأكد من استخدام YOUTUBE_API_KEY من Secret المنصة فقط
+- [x] إزالة اعتماد البناء العملي على GitHub Actions دون حذف كود التطبيق
+- [x] التحقق من Channel ID ومصدر YouTube وتهيئة المشغل
+- [x] التأكد من عدم انتظار API قبل عرض التطبيق
+- [x] تشغيل TypeScript وVitest وLint وExpo config
+- [x] حفظ نسخة جاهزة لبناء Expo داخل المنصة
+- [x] توثيق أن APK النهائي يحتاج تثبيتًا واختبارًا فعليًا
