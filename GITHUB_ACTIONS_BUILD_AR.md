@@ -14,6 +14,8 @@ YOUTUBE_API_KEY
 
 ضع قيمة مفتاح YouTube Data API v3 في خانة القيمة فقط. لا تضعه في أي ملف، ولا في README، ولا في commit، ولا داخل إعدادات Expo العامة. الـWorkflow يمرر السر إلى `app.config.ts` عبر متغير البيئة وقت البناء، ويحتفظ به خارج المستودع.
 
+لتشغيل تسجيل الدخول الحالي داخل APK، أضف أيضًا الأسرار التالية في GitHub Actions إذا كانت خدمة OAuth الخاصة بالمشروع مطلوبة: `EXPO_PUBLIC_API_BASE_URL` و`EXPO_PUBLIC_OAUTH_PORTAL_URL` و`EXPO_PUBLIC_OAUTH_SERVER_URL` و`EXPO_PUBLIC_APP_ID` و`EXPO_PUBLIC_OWNER_OPEN_ID` و`EXPO_PUBLIC_OWNER_NAME`. لا توجد قيم هذه الإعدادات كاملة داخل بيئة التطوير الحالية، لذلك لن أضع قيمًا تخمينية. جلب YouTube لا يعتمد على هذه القيم؛ يعتمد على `YOUTUBE_API_KEY` فقط.
+
 ## تشغيل البناء
 
 افتح تبويب Actions، اختر `Build Android APK`، اضغط Run workflow، ثم اختر فرع `main` واضغط التشغيل. بعد انتهاء المهمة افتحها، ثم نزّل Artifact المسمى `ahyaa-abdelrahman-elbaz-debug-apk`. فك الضغط وثبّت `app-debug.apk` على جهاز Android مع السماح بالتثبيت من هذا المصدر عند الحاجة.
