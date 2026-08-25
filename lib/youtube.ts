@@ -1,51 +1,26 @@
-export const OFFICIAL_CHANNEL_HANDLE = "@mr.abdelrahmanelbaz";
 export const OFFICIAL_CHANNEL_ID = "UCZJdmjp4Mt-wU7miDGMEOuA";
-export const OFFICIAL_CHANNEL_URL = "https://youtube.com/@mr.abdelrahmanelbaz";
-
+export const OFFICIAL_CHANNEL_HANDLE = "@mr.abdelrahmanelbaz";
 const API_BASE = "https://www.googleapis.com/youtube/v3";
-const API_KEY = process.env.YOUTUBE_API_KEY ?? process.env.EXPO_PUBLIC_YOUTUBE_API_KEY ?? "";
+const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY ?? "";
+const IS_DEV = typeof __DEV__ !== "undefined" && __DEV__;
 
-type ApiList<T> = { items?: T[]; nextPageToken?: string; error?: { message?: string } };
-export type YouTubeChannel = { id: string; title: string; description: string; thumbnailUrl?: string; subscriberCount?: number; videoCount?: number; viewCount?: number };
+type ApiList<T> = { items?: T[]; nextPageToken?: string; error?: { message?: string; errors?: Array<{ reason?: string }> } };
+export type YouTubeChannel = { id: string; title: string; description: string; thumbnailUrl?: string; subscriberCount?: number; videoCount?: number; viewCount?: number; uploadsPlaylistId?: string };
 export type YouTubeVideo = { id: string; title: string; description: string; thumbnailUrl: string; publishedAt: string; duration?: string; views?: number; likes?: number; comments?: number; embeddable: boolean; url: string };
 export type YouTubePlaylist = { id: string; title: string; description: string; thumbnailUrl?: string; itemCount?: number };
 export type YouTubePlaylistItem = { id: string; videoId: string; title: string; description: string; thumbnailUrl: string; position: number; publishedAt: string };
 export type YouTubeHomeData = { channel: YouTubeChannel; videos: YouTubeVideo[]; playlists: YouTubePlaylist[] };
 export type YouTubeSourceSettings = { channelHandle: string; channelId: string; apiKeyConfigured: boolean };
 
-function assertConfigured() { if (!API_KEY) throw new Error("YOUTUBE_API_KEY_NOT_CONFIGURED"); }
-async function request<T>(resource: string, params: Record<string, string>) {
-  assertConfigured();
-  const url = new URL(`${API_BASE}/${resource}`);
-  Object.entries({ ...params, key: API_KEY }).forEach(([key, value]) => url.searchParams.set(key, value));
-  const response = await fetch(url);
-  const payload = await response.json() as T & { error?: { message?: string } };
-  if (!response.ok) throw new Error(payload.error?.message ?? `YOUTUBE_API_${response.status}`);
-  return payload;
-}
-
-async function collect<T>(resource: string, params: Record<string, string>, map: (item: any) => T) {
-  const result: T[] = []; let pageToken = "";
-  do { const payload = await request<ApiList<any>>(resource, { ...params, ...(pageToken ? { pageToken } : {}) }); result.push(...(payload.items ?? []).map(map)); pageToken = payload.nextPageToken ?? ""; } while (pageToken);
-  return result;
-}
-
-export class YouTubeIntegration {
-  constructor(private readonly settings: YouTubeSourceSettings = { channelHandle: OFFICIAL_CHANNEL_HANDLE, channelId: OFFICIAL_CHANNEL_ID, apiKeyConfigured: Boolean(API_KEY) }) {}
-  isConfigured() { return Boolean(this.settings.channelId && API_KEY); }
-  async fetchChannel(): Promise<YouTubeChannel> {
-    const p = await request<ApiList<any>>("channels", { part: "snippet,statistics", id: this.settings.channelId });
-    const item = p.items?.[0]; if (!item) throw new Error("YOUTUBE_CHANNEL_NOT_FOUND");
-    return { id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, subscriberCount: Number(item.statistics?.subscriberCount), videoCount: Number(item.statistics?.videoCount), viewCount: Number(item.statistics?.viewCount) };
-  }
-  async fetchVideos(): Promise<YouTubeVideo[]> {
-    const ids = await collect("search", { part: "snippet", channelId: this.settings.channelId, type: "video", order: "date", maxResults: "50" }, (item) => item.id.videoId as string);
-    if (!ids.length) return [];
-    const p = await request<ApiList<any>>("videos", { part: "snippet,contentDetails,statistics,status", id: ids.join(",") });
-    return (p.items ?? []).sort((a,b) => Date.parse(b.snippet.publishedAt) - Date.parse(a.snippet.publishedAt)).map(item => ({ id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.medium?.url ?? item.snippet.thumbnails?.default?.url, publishedAt: item.snippet.publishedAt, duration: item.contentDetails?.duration, views: Number(item.statistics?.viewCount), likes: Number(item.statistics?.likeCount), comments: Number(item.statistics?.commentCount), embeddable: Boolean(item.status?.embeddable), url: `https://www.youtube.com/watch?v=${item.id}` }));
-  }
+function arabicError(status: number, reason?: string, apiMessage?: string) { const message = apiMessage?.toLowerCase() ?? ""; if (reason === "keyInvalid" || message.includes("api key not valid")) return "مفتاح YouTube غير صالح أو غير متاح في بيئة التشغيل الحالية."; if (reason === "ipRefererBlocked") return "المفتاح مقيّد بمرجع أو بيئة مختلفة؛ اختبره على Android المقيّد بدل Web Preview."; if (reason === "quotaExceeded" || reason === "dailyLimitExceeded") return "تم استهلاك حصة YouTube اليومية لهذا المفتاح."; if (status === 403) return "رفض YouTube الطلب. تحقق من تفعيل YouTube Data API v3 وقيود المفتاح."; if (status === 400) return "رفض YouTube الطلب. تحقق من Channel ID وإعدادات الطلب."; if (status === 404) return "لم يتم العثور على القناة أو المحتوى المطلوب."; if (status === 429) return "تم تجاوز حد طلبات YouTube مؤقتًا. حاول لاحقًا."; return "تعذر الاتصال بـ YouTube حاليًا. تحقق من الشبكة وحاول مرة أخرى."; }
+function assertConfigured() { if (!API_KEY) throw new Error("لم يتم إعداد YOUTUBE_API_KEY في بيئة التطبيق."); }
+async function request<T>(resource: string, params: Record<string, string>) { assertConfigured(); const url = new URL(`${API_BASE}/${resource}`); Object.entries({ ...params, key: API_KEY }).forEach(([key, value]) => url.searchParams.set(key, value)); try { const response = await fetch(url); const payload = await response.json() as T & { error?: { message?: string; errors?: Array<{ reason?: string }> } }; const reason = payload.error?.errors?.[0]?.reason; if (IS_DEV) console.info(`[YouTube] ${resource} status=${response.status} results=${Array.isArray((payload as ApiList<unknown>).items) ? (payload as ApiList<unknown>).items?.length ?? 0 : 0}${reason ? ` reason=${reason}` : ""}`); if (!response.ok) throw new Error(arabicError(response.status, reason, payload.error?.message)); return payload; } catch (error) { if (error instanceof Error && (error.message.startsWith("مفتاح") || error.message.startsWith("المفتاح") || error.message.startsWith("رفض") || error.message.startsWith("لم يتم") || error.message.startsWith("تم استهلاك") || error.message.startsWith("تم تجاوز"))) throw error; if (error instanceof Error && IS_DEV) console.info(`[YouTube] ${resource} network-error=${error.message}`); throw new Error("تعذر الاتصال بـ YouTube حاليًا. تحقق من الشبكة وحاول مرة أخرى."); } }
+async function collect<T>(resource: string, params: Record<string, string>, map: (item: any) => T) { const result: T[] = []; let pageToken = ""; do { const payload = await request<ApiList<any>>(resource, { ...params, ...(pageToken ? { pageToken } : {}) }); result.push(...(payload.items ?? []).map(map)); pageToken = payload.nextPageToken ?? ""; } while (pageToken); return result; }
+export class YouTubeIntegration { constructor(private readonly settings: YouTubeSourceSettings = { channelHandle: OFFICIAL_CHANNEL_HANDLE, channelId: OFFICIAL_CHANNEL_ID, apiKeyConfigured: Boolean(API_KEY) }) {} isConfigured() { return Boolean(this.settings.channelId && API_KEY); }
+  async fetchChannel(): Promise<YouTubeChannel> { const p = await request<ApiList<any>>("channels", { part: "snippet,statistics,contentDetails", id: this.settings.channelId }); const item = p.items?.[0]; if (!item) throw new Error("لم يتم العثور على القناة الرسمية."); return { id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, subscriberCount: Number(item.statistics?.subscriberCount), videoCount: Number(item.statistics?.videoCount), viewCount: Number(item.statistics?.viewCount), uploadsPlaylistId: item.contentDetails?.relatedPlaylists?.uploads }; }
+  async fetchVideos(): Promise<YouTubeVideo[]> { const channel = await this.fetchChannel(); const uploadsPlaylistId = channel.uploadsPlaylistId; if (!uploadsPlaylistId) throw new Error("لم يتم العثور على قائمة فيديوهات القناة الرسمية."); const ids = (await collect("playlistItems", { part: "snippet,contentDetails", playlistId: uploadsPlaylistId, maxResults: "50" }, item => item.contentDetails?.videoId as string | undefined)).filter((id): id is string => Boolean(id)); if (!ids.length) return []; const batches: string[][] = []; for (let index = 0; index < ids.length; index += 50) batches.push(ids.slice(index, index + 50)); const responses = await Promise.all(batches.map(batch => request<ApiList<any>>("videos", { part: "snippet,contentDetails,statistics,status", id: batch.join(",") }))); const items = responses.flatMap(response => response.items ?? []); return items.sort((a,b) => Date.parse(b.snippet.publishedAt) - Date.parse(a.snippet.publishedAt)).map(item => ({ id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.medium?.url ?? item.snippet.thumbnails?.default?.url, publishedAt: item.snippet.publishedAt, duration: item.contentDetails?.duration, views: Number(item.statistics?.viewCount), likes: Number(item.statistics?.likeCount), comments: Number(item.statistics?.commentCount), embeddable: Boolean(item.status?.embeddable), url: `https://www.youtube.com/watch?v=${item.id}` })); }
   async fetchPlaylists(): Promise<YouTubePlaylist[]> { return collect("playlists", { part: "snippet,contentDetails", channelId: this.settings.channelId, maxResults: "50" }, item => ({ id: item.id, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, itemCount: item.contentDetails?.itemCount })); }
-  async fetchPlaylistItems(playlistId: string): Promise<YouTubePlaylistItem[]> { return collect("playlistItems", { part: "snippet,contentDetails", playlistId, maxResults: "50" }, item => ({ id: item.id, videoId: item.contentDetails.videoId, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, position: item.snippet.position, publishedAt: item.snippet.publishedAt })); }
+  async fetchPlaylistItems(playlistId: string): Promise<YouTubePlaylistItem[]> { return collect("playlistItems", { part: "snippet,contentDetails", playlistId, maxResults: "50" }, item => item.contentDetails?.videoId ? ({ id: item.id, videoId: item.contentDetails.videoId, title: item.snippet.title, description: item.snippet.description, thumbnailUrl: item.snippet.thumbnails?.high?.url ?? item.snippet.thumbnails?.default?.url, position: item.snippet.position, publishedAt: item.snippet.publishedAt }) : null).then(items => items.filter((item): item is YouTubePlaylistItem => Boolean(item)).sort((a,b) => a.position - b.position)); }
   async findVideoPlaylistContext(videoId: string): Promise<{ playlistId: string; items: YouTubePlaylistItem[] } | null> { const playlists = await this.fetchPlaylists(); for (const playlist of playlists) { const items = await this.fetchPlaylistItems(playlist.id); if (items.some(item => item.videoId === videoId)) return { playlistId: playlist.id, items }; } return null; }
   async fetchHomeData(): Promise<YouTubeHomeData> { const [channel, videos, playlists] = await Promise.all([this.fetchChannel(), this.fetchVideos(), this.fetchPlaylists()]); return { channel, videos, playlists }; }
 }

@@ -40,10 +40,11 @@ const mappings = {
   OAUTH_SERVER_URL: "EXPO_PUBLIC_OAUTH_SERVER_URL",
   OWNER_OPEN_ID: "EXPO_PUBLIC_OWNER_OPEN_ID",
   OWNER_NAME: "EXPO_PUBLIC_OWNER_NAME",
+  YOUTUBE_API_KEY: "EXPO_PUBLIC_YOUTUBE_API_KEY",
 };
 
 for (const [systemVar, expoVar] of Object.entries(mappings)) {
-  if (process.env[systemVar] && !process.env[expoVar]) {
+  if (process.env[systemVar]) {
     process.env[expoVar] = process.env[systemVar];
   }
 }
