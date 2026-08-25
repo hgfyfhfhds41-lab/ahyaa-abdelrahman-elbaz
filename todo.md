@@ -280,3 +280,11 @@
 - [x] رفع أي إصلاحات إلى مستودع mohamed-helal
 - [x] تشغيل Workflow أو توثيق العائق الخارجي
 - [x] توثيق أن الاختبار النهائي يحتاج APK وجهاز Android فعلي
+
+## عائق البناء الحالي في GitHub Actions
+
+- [ ] إضافة `EXPO_PUBLIC_API_BASE_URL` إلى Repository Secrets
+- [ ] إضافة `EXPO_PUBLIC_OAUTH_PORTAL_URL` إلى Repository Secrets
+- [ ] إضافة `EXPO_PUBLIC_APP_ID` إلى Repository Secrets
+- [ ] إعادة تشغيل Workflow بعد إضافة أسرار المصادقة
+- [ ] تنزيل APK واختباره على جهاز Android فعلي
