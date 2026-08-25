@@ -214,3 +214,14 @@
 - [x] تحديد متطلبات Google Cloud وAndroid Client ID وSHA-1 دون تخمين
 - [x] تشغيل TypeScript وVitest وLint وExpo config دون Build
 - [x] إعداد التقرير النهائي والتوقف قبل شاشة الاشتراك الإجباري
+
+## إعداد YouTube OAuth الفعلي — مراجعة لاحقة
+
+- [ ] التحقق من Google OAuth Client Android الفعلي دون تخمين
+- [ ] التحقق من SHA-1 لشهادة Android من مصدر موثوق
+- [ ] ربط نطاق youtube.readonly بمسار Google OAuth الفعلي
+- [ ] الحصول على YouTube Access Token فعلي من callback الرسمي
+- [x] تجهيز تمرير token إلى طبقة subscriptions.list دون كشفه
+- [ ] اختبار subscriptions.list بحساب مستخدم مفوض فعليًا
+- [x] تشغيل الفحوص النهائية دون Build أو APK
+- [x] توثيق ما تم وما بقي والتوقف قبل شاشة الاشتراك الإجباري
