@@ -62,7 +62,7 @@ export default function OAuthCallback() {
           setStatus("success");
           console.log("[OAuth] Web authentication successful, redirecting to home...");
           setTimeout(() => {
-            router.replace("/(tabs)");
+            router.replace({ pathname: "/login", params: { status: "success" } });
           }, 1000);
           return;
         }
@@ -159,19 +159,19 @@ export default function OAuthCallback() {
           setStatus("success");
           console.log("[OAuth] Redirecting to home...");
           setTimeout(() => {
-            router.replace("/(tabs)");
+            router.replace({ pathname: "/login", params: { status: "success" } });
           }, 1000);
           return;
         }
 
         // Otherwise, exchange code for session token
         if (!code || !state) {
-          console.error("[OAuth] Missing code or state parameter", {
+          console.error("[OAuth] بيانات تسجيل الدخول غير مكتملة.", {
             hasCode: !!code,
             hasState: !!state,
           });
           setStatus("error");
-          setErrorMessage("Missing code or state parameter");
+          setErrorMessage("بيانات تسجيل الدخول غير مكتملة.");
           return;
         }
 
@@ -215,18 +215,18 @@ export default function OAuthCallback() {
           // Redirect to home after a short delay
           setTimeout(() => {
             console.log("[OAuth] Executing redirect...");
-            router.replace("/(tabs)");
+            router.replace({ pathname: "/login", params: { status: "success" } });
           }, 1000);
         } else {
           console.error("[OAuth] No session token in result:", result);
           setStatus("error");
-          setErrorMessage("No session token received");
+          setErrorMessage("لم يتم استلام جلسة صالحة.");
         }
       } catch (error) {
         console.error("[OAuth] Callback error:", error);
         setStatus("error");
         setErrorMessage(
-          error instanceof Error ? error.message : "Failed to complete authentication",
+          error instanceof Error ? error.message : "تعذر إكمال تسجيل الدخول.",
         );
       }
     };
@@ -241,24 +241,24 @@ export default function OAuthCallback() {
           <>
             <ActivityIndicator size="large" />
             <Text className="mt-4 text-base leading-6 text-center text-foreground">
-              Completing authentication...
+              جارٍ إكمال تسجيل الدخول…
             </Text>
           </>
         )}
         {status === "success" && (
           <>
             <Text className="text-base leading-6 text-center text-foreground">
-              Authentication successful!
+              تم تسجيل الدخول بنجاح
             </Text>
             <Text className="text-base leading-6 text-center text-foreground">
-              Redirecting...
+              جارٍ فتح التطبيق…
             </Text>
           </>
         )}
         {status === "error" && (
           <>
             <Text className="mb-2 text-xl font-bold leading-7 text-error">
-              Authentication failed
+              تعذر تسجيل الدخول
             </Text>
             <Text className="text-base leading-6 text-center text-foreground">
               {errorMessage}

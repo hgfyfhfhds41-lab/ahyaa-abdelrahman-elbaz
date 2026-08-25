@@ -1,13 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { WebView, type WebViewMessageEvent } from "react-native-webview";
 import { router, useLocalSearchParams } from "expo-router";
+import * as NavigationBar from "expo-navigation-bar";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ScreenContainer } from "@/components/screen-container";
 import { DESIGN } from "@/constants/design-system";
 import { youtube, type YouTubePlaylistItem, type YouTubeVideo } from "@/lib/youtube";
 
-const playerHtml = (id: string) => `<!doctype html><html><body style="margin:0;background:#061719"><div id="player"></div><script>var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);var player;function send(s){window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({state:s}))}function onYouTubeIframeAPIReady(){player=new YT.Player('player',{width:'100%',height:'100%',videoId:'${id}',playerVars:{playsinline:1,controls:1,rel:0,modestbranding:1},events:{onReady:function(){send('ready')},onStateChange:function(e){send(e.data===1?'playing':e.data===2?'paused':e.data===3?'buffering':e.data===0?'ended':'ready')},onError:function(){send('error')}}})}</script></body></html>`;
+const playerHtml = (id: string) => `<!doctype html><html><body style="margin:0;background:#061719"><div id="player"></div><script>var tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';document.head.appendChild(tag);var player;function send(s){window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({state:s}))}function onYouTubeIframeAPIReady(){player=new YT.Player('player',{width:'100%',height:'100%',videoId:'${id}',playerVars:{playsinline:1,controls:1,rel:0,modestbranding:1},events:{onReady:function(){send('ready')},onStateChange:function(e){send(e.data===1?'playing':e.data===2?'paused':e.data===3?'buffering':e.data===0?'ended':'ready')},onError:function(){send('error')}}})}function toggleFullscreen(){var iframe=player&&player.getIframe&&player.getIframe();if(document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen();return}if(iframe&&iframe.requestFullscreen){iframe.requestFullscreen();send('fullscreen-enter')}}document.addEventListener('fullscreenchange',function(){send(document.fullscreenElement?'fullscreen-enter':'fullscreen-exit')});</script></body></html>`;
 
 function WebYouTubePlayer({ videoId }: { videoId: string }) {
   return React.createElement("iframe", {
@@ -26,6 +28,8 @@ export default function VideoDetailsScreen() {
   const [error, setError] = useState("");
   const [state, setState] = useState("loading");
   const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const webViewRef = useRef<React.ComponentRef<typeof WebView>>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -53,9 +57,57 @@ export default function VideoDetailsScreen() {
   }, [id]);
 
   const html = useMemo(() => (video?.embeddable ? playerHtml(video.id) : ""), [video]);
+
+  const setFullscreenUi = async (enabled: boolean) => {
+    if (Platform.OS !== "android") return;
+    try {
+      if (enabled) {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        await NavigationBar.setBehaviorAsync("overlay-swipe");
+        await NavigationBar.setVisibilityAsync("hidden");
+      } else {
+        await NavigationBar.setVisibilityAsync("visible");
+        await NavigationBar.setBehaviorAsync("inset-swipe");
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      }
+      setIsFullscreen(enabled);
+    } catch {
+      setState("error");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (Platform.OS === "android") {
+        void NavigationBar.setVisibilityAsync("visible");
+        void NavigationBar.setBehaviorAsync("inset-swipe");
+        void ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      }
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (Platform.OS !== "android") return;
+    if (isFullscreen) {
+      webViewRef.current?.injectJavaScript("if(document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen();} true;");
+      void setFullscreenUi(false);
+      return;
+    }
+    webViewRef.current?.injectJavaScript("if(typeof toggleFullscreen==='function'){toggleFullscreen();} true;");
+    void setFullscreenUi(true);
+  };
+
   const onMessage = (event: WebViewMessageEvent) => {
     try {
       const nextState = JSON.parse(event.nativeEvent.data).state as string;
+      if (nextState === "fullscreen-enter") {
+        void setFullscreenUi(true);
+        return;
+      }
+      if (nextState === "fullscreen-exit") {
+        void setFullscreenUi(false);
+        return;
+      }
       setState(nextState);
     } catch {
       setState("error");
@@ -103,7 +155,12 @@ export default function VideoDetailsScreen() {
                   </View>
                 )
               ) : video.embeddable ? (
-                <WebView source={{ html }} onMessage={onMessage} javaScriptEnabled allowsInlineMediaPlayback mediaPlaybackRequiresUserAction originWhitelist={["*"]} />
+                <View style={isFullscreen ? styles.fullscreenPlayer : styles.playerInner}>
+                  <WebView ref={webViewRef} source={{ html }} onMessage={onMessage} javaScriptEnabled allowsInlineMediaPlayback allowsFullscreenVideo mediaPlaybackRequiresUserAction originWhitelist={["*"]} style={styles.webView} />
+                  <Pressable onPress={toggleFullscreen} style={styles.fullscreenButton} accessibilityLabel={isFullscreen ? "الخروج من ملء الشاشة" : "ملء الشاشة"}>
+                    <MaterialIcons name={isFullscreen ? "fullscreen-exit" : "fullscreen"} size={22} color="#fff" />
+                  </Pressable>
+                </View>
               ) : (
                 <View style={styles.blocked}>
                   <MaterialIcons name="block" size={34} color={DESIGN.colors.danger} />
@@ -163,6 +220,10 @@ const styles = StyleSheet.create({
   headerSpacer: { width: 42 },
   headerTitle: { color: DESIGN.colors.text, fontSize: 21, fontWeight: "900" },
   player: { width: "100%", height: 220, borderRadius: 20, overflow: "hidden", backgroundColor: "#000" },
+  playerInner: { flex: 1, backgroundColor: "#000" },
+  fullscreenPlayer: { ...StyleSheet.absoluteFillObject, zIndex: 20, backgroundColor: "#000" },
+  webView: { flex: 1, backgroundColor: "#000" },
+  fullscreenButton: { position: "absolute", right: 12, bottom: 12, width: 42, height: 42, borderRadius: 12, backgroundColor: "rgba(0,0,0,0.7)", alignItems: "center", justifyContent: "center" },
   blocked: { flex: 1, alignItems: "center", justifyContent: "center", padding: 25 },
   blockedText: { color: DESIGN.colors.text, textAlign: "center", marginTop: 10, lineHeight: 22 },
   messageCard: { minHeight: 180, borderRadius: 20, backgroundColor: DESIGN.colors.surface, alignItems: "center", justifyContent: "center", padding: 24 },

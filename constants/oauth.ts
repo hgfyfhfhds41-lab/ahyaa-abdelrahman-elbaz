@@ -1,5 +1,6 @@
 import * as Linking from "expo-linking";
 import * as ReactNative from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 // Extract scheme from bundle ID (last segment timestamp, prefixed with "manus")
 // e.g., "space.manus.my.app.t20240115103045" -> "manus20240115103045"
@@ -101,7 +102,7 @@ export const getLoginUrl = () => {
  *
  * @returns Always null, the callback is handled via deep link.
  */
-export async function startOAuthLogin(): Promise<string | null> {
+export async function startOAuthLogin(): Promise<"opened" | "cancelled" | null> {
   const loginUrl = getLoginUrl();
 
   if (ReactNative.Platform.OS === "web") {
@@ -112,20 +113,12 @@ export async function startOAuthLogin(): Promise<string | null> {
     return null;
   }
 
-  const supported = await Linking.canOpenURL(loginUrl);
-  if (!supported) {
-    console.warn("[OAuth] Cannot open login URL: URL scheme not supported");
-    // 可考虑抛出错误或返回错误状态，让调用方处理
-    return null;
-  }
-
   try {
-    await Linking.openURL(loginUrl);
+    const result = await WebBrowser.openAuthSessionAsync(loginUrl, getRedirectUri());
+    if (result.type === "cancel" || result.type === "dismiss") return "cancelled";
+    return "opened";
   } catch (error) {
-    console.error("[OAuth] Failed to open login URL:", error);
-    // 可考虑抛出错误让调用方处理
+    console.error("[OAuth] Failed to start authentication session:", error);
+    throw error;
   }
-
-  // The OAuth callback will reopen the app via deep link.
-  return null;
 }
