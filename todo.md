@@ -202,3 +202,15 @@
 - [x] تشغيل TypeScript وVitest وLint وExpo config check
 - [x] توثيق ما تم وما تعذر والصلاحيات والإعدادات الخارجية
 - [ ] حفظ checkpoint دون Build والتوقف قبل أي مرحلة لاحقة
+
+## تجهيز YouTube OAuth للتحقق من الاشتراك
+
+- [x] توثيق ما يعيده OAuth الحالي وعدم اعتباره YouTube access token
+- [x] تعريف نطاق YouTube للقراءة فقط دون صلاحيات إدارة
+- [x] إنشاء طبقة تحقق subscriptions.list باستخدام access token فقط
+- [x] استخدام SecureStore لتخزين YouTube access token إن أصبح متاحًا
+- [x] إرجاع حالات مشترك وغير مشترك وOAuth مطلوب وانتهاء الرمز والخطأ
+- [x] إضافة اختبارات وحدة حتمية لجميع حالات التحقق
+- [x] تحديد متطلبات Google Cloud وAndroid Client ID وSHA-1 دون تخمين
+- [x] تشغيل TypeScript وVitest وLint وExpo config دون Build
+- [x] إعداد التقرير النهائي والتوقف قبل شاشة الاشتراك الإجباري
