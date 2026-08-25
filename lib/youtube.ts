@@ -1,3 +1,4 @@
+const IS_DEV = typeof __DEV__ !== "undefined" && __DEV__;
 type ExpoConstantsShape = { expoConfig?: { extra?: { youtubeApiKey?: string } }; manifest?: { extra?: { youtubeApiKey?: string } }; manifest2?: { extra?: { youtubeApiKey?: string } }; easConfig?: { extra?: { youtubeApiKey?: string } } };
 function readRuntimeApiKey() { const isRealKey = (value: unknown): value is string => typeof value === "string" && value.length > 20 && value !== "YOUTUBE_API_KEY"; try { const constants = require("expo-constants").default as ExpoConstantsShape; const sources = [{ name: "expoConfig", value: constants.expoConfig?.extra?.youtubeApiKey }, { name: "manifest2", value: constants.manifest2?.extra?.youtubeApiKey }, { name: "manifest", value: constants.manifest?.extra?.youtubeApiKey }, { name: "easConfig", value: constants.easConfig?.extra?.youtubeApiKey }]; const match = sources.find(source => isRealKey(source.value)); if (IS_DEV) console.info(`[YouTube] runtime-key-source=${match?.name ?? "none"} configured=${Boolean(match)}`); if (match && isRealKey(match.value)) return match.value; } catch { /* Expo Constants غير متاح خارج التطبيق */ } const publicKey = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY; return isRealKey(publicKey) ? publicKey : ""; }
 
@@ -5,8 +6,6 @@ export const OFFICIAL_CHANNEL_ID = "UCZJdmjp4Mt-wU7miDGMEOuA";
 export const OFFICIAL_CHANNEL_HANDLE = "@mr.abdelrahmanelbaz";
 const API_BASE = "https://www.googleapis.com/youtube/v3";
 const API_KEY = readRuntimeApiKey();
-const IS_DEV = typeof __DEV__ !== "undefined" && __DEV__;
-
 type ApiList<T> = { items?: T[]; nextPageToken?: string; error?: { message?: string; errors?: Array<{ reason?: string }> } };
 export type YouTubeChannel = { id: string; title: string; description: string; thumbnailUrl?: string; subscriberCount?: number; videoCount?: number; viewCount?: number; uploadsPlaylistId?: string };
 export type YouTubeVideo = { id: string; title: string; description: string; thumbnailUrl: string; publishedAt: string; duration?: string; views?: number; likes?: number; comments?: number; embeddable: boolean; url: string };

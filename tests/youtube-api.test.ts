@@ -9,6 +9,8 @@ describe("YouTube API credential", () => {
     const expoApiKey = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
     expect(apiKey, "YOUTUBE_API_KEY must be provided").toBeTruthy();
     expect(expoApiKey, "EXPO_PUBLIC_YOUTUBE_API_KEY mapping must be provided").toBeTruthy();
+    expect(apiKey).not.toContain("TO_BE_REPLACED");
+    expect(expoApiKey).not.toContain("TO_BE_REPLACED");
 
     const url = new URL("https://www.googleapis.com/youtube/v3/channels");
     url.searchParams.set("part", "snippet,statistics");
