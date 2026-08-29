@@ -402,3 +402,14 @@
 - [x] متابعة خطوات التحقق والتجميع ورفع Artifact
 - [x] تنزيل APK والتحقق من نوعه
 - [x] توثيق نتيجة البناء وعدم كشف قيمة السر
+
+## إصلاح Splash وفتح Home مباشرة
+
+- [x] فحص RootLayout وStack والـinitial route ومسارات login وtabs
+- [x] فحص أي استدعاء مبكر قد يمنع تركيب Home أو إخفاء Splash
+- [x] جعل Home المسار الافتراضي دون AuthGate أو شرط تسجيل دخول
+- [x] ضمان إخفاء Splash بعد Mount مع fallback زمني آمن
+- [x] معالجة فشل API أو غياب المفتاح بحالة خطأ عربية دون Mock Data
+- [x] تشغيل TypeScript وVitest وLint وExpo Doctor
+- [ ] رفع التعديل إلى yasser وتشغيل Build Android جديد
+- [ ] توثيق نتيجة البناء وعدم ادعاء اختبار جهاز فعلي

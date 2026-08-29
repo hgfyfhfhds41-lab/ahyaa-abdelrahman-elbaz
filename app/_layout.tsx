@@ -1,5 +1,6 @@
 import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SplashScreen from "expo-splash-screen";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -37,6 +38,22 @@ export default function RootLayout() {
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
     initManusRuntime();
+  }, []);
+
+  // Never let a failed optional initialization keep the native splash visible.
+  useEffect(() => {
+    let disposed = false;
+    const hideSplash = () => {
+      if (disposed) return;
+      void SplashScreen.hideAsync().catch(() => undefined);
+    };
+
+    hideSplash();
+    const fallbackTimer = setTimeout(hideSplash, 1500);
+    return () => {
+      disposed = true;
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
@@ -85,7 +102,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <AuthProvider autoFetch={false}>
             {/* Keep native headers hidden so route segment names never appear. */}
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="oauth/callback" />
             <Stack.Screen name="login" options={{ presentation: "fullScreenModal" }} />
