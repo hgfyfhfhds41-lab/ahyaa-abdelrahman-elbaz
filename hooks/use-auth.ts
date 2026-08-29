@@ -84,8 +84,8 @@ function useAuthState(options?: UseAuthOptions): AuthContextValue {
   return useMemo(() => ({ user, loading, error, isAuthenticated: Boolean(user), refresh: fetchUser, logout }), [user, loading, error, fetchUser, logout]);
 }
 
-export function AuthProvider({ children }: PropsWithChildren) {
-  const value = useAuthState();
+export function AuthProvider({ children, autoFetch = true }: PropsWithChildren<UseAuthOptions>) {
+  const value = useAuthState({ autoFetch });
   return createElement(AuthContext.Provider, { value }, children);
 }
 
