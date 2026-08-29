@@ -333,3 +333,13 @@
 - [x] تشغيل TypeScript وVitest وLint وExpo config
 - [x] رفع أي ملفات ناقصة إلى GitHub دون Secrets
 - [x] التحقق من جاهزية Workflow للبناء والتوقف دون تشغيل APK تلقائيًا
+
+## إصلاح Workflow بعد أخطاء Secrets الناقصة
+
+- [x] مراجعة سبب طلب EXPO_PUBLIC_APP_ID وEXPO_PUBLIC_OAUTH_PORTAL_URL وEXPO_PUBLIC_API_BASE_URL
+- [x] تحديد ما يمكن جعله إعدادًا عامًا وما يجب أن يبقى Secret
+- [x] تعديل Workflow لعدم إيقاف البناء بسبب إعدادات عامة غير سرية
+- [x] الحفاظ على YOUTUBE_API_KEY داخل GitHub Secret فقط
+- [x] تشغيل الفحوص والتحقق من Workflow وغياب القيم الحساسة
+- [x] رفع التصحيح إلى mohamed-helal
+- [x] متابعة نتيجة البناء وتوثيق أي عائق خارجي

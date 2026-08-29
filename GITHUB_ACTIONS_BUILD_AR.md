@@ -14,9 +14,9 @@ YOUTUBE_API_KEY
 
 ضع قيمة مفتاح YouTube Data API v3 في خانة القيمة فقط. لا تضعه في أي ملف، ولا في README، ولا في commit، ولا داخل إعدادات Expo العامة. الـWorkflow يمرر السر إلى `app.config.ts` عبر متغير البيئة وقت البناء، ويحتفظ به خارج المستودع.
 
-يتحقق Workflow أيضًا من وجود `EXPO_PUBLIC_API_BASE_URL` و`EXPO_PUBLIC_OAUTH_PORTAL_URL` و`EXPO_PUBLIC_APP_ID` قبل البناء، لأنها مطلوبة حتى لا يتوقف تسجيل الدخول داخل APK. ويولّد Workflow بصمة شهادة Debug للبناء ويضعها في `ANDROID_CERT_SHA1` وقت التهيئة؛ إذا كان مفتاح YouTube مقيّدًا بتطبيق Android، أضف هذه البصمة مع الحزمة `com.app.ahyaaabdelrahmanelbaz` في Google Cloud. لا تُضمّن Client Secret أو Access Token داخل التطبيق.
+يتحقق Workflow من وجود `YOUTUBE_API_KEY` قبل البناء لأنه المطلوب لجلب محتوى YouTube. إعدادات OAuth ليست شرطًا لإخراج APK؛ وإذا كان تسجيل الدخول مطلوبًا داخل APK فيلزم ضبط إعداداته الخارجية لاحقًا. ويولّد Workflow بصمة شهادة Debug للبناء ويضعها في `ANDROID_CERT_SHA1` وقت التهيئة؛ إذا كان مفتاح YouTube مقيّدًا بتطبيق Android، أضف هذه البصمة مع الحزمة `com.app.ahyaaabdelrahmanelbaz` في Google Cloud. لا تُضمّن Client Secret أو Access Token داخل التطبيق.
 
-لتشغيل تسجيل الدخول الحالي داخل APK، أضف أيضًا الأسرار التالية في GitHub Actions إذا كانت خدمة OAuth الخاصة بالمشروع مطلوبة: `EXPO_PUBLIC_API_BASE_URL` و`EXPO_PUBLIC_OAUTH_PORTAL_URL` و`EXPO_PUBLIC_OAUTH_SERVER_URL` و`EXPO_PUBLIC_APP_ID` و`EXPO_PUBLIC_OWNER_OPEN_ID` و`EXPO_PUBLIC_OWNER_NAME`. لا توجد قيم هذه الإعدادات كاملة داخل بيئة التطوير الحالية، لذلك لن أضع قيمًا تخمينية. جلب YouTube لا يعتمد على هذه القيم؛ يعتمد على `YOUTUBE_API_KEY` فقط.
+جلب YouTube لا يعتمد على إعدادات OAuth؛ يعتمد على `YOUTUBE_API_KEY` فقط. يستخدم Workflow قيمًا عامة افتراضية للبناء، بينما تظل إعدادات OAuth اختيارية للبناء ويجب ضبطها إذا كان تسجيل الدخول مطلوبًا.
 
 ## تشغيل البناء
 
