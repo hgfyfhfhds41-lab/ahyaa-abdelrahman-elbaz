@@ -323,3 +323,13 @@
 - [x] توثيق Player Parameters وقيود Origin/Referer وأخطاء 152/153
 - [x] توثيق Fullscreen والاتجاه الأفقي/العمودي
 - [x] إعداد تقرير عربي كامل دون أسرار أو قيم مفاتيح
+
+## مزامنة GitHub النهائية للبناء
+
+- [ ] فحص remote والفرع والنسخة الحالية في mohamed-helal
+- [ ] التأكد من وجود YOUTUBE_API_KEY كـSecret دون قراءة قيمته
+- [ ] تدقيق ملفات التصميم والكود والإعدادات غير السرية
+- [ ] التأكد من أن Workflow يمرر Secret إلى Expo وقت البناء
+- [ ] تشغيل TypeScript وVitest وLint وExpo config
+- [ ] رفع أي ملفات ناقصة إلى GitHub دون Secrets
+- [ ] التحقق من جاهزية Workflow للبناء والتوقف دون تشغيل APK تلقائيًا
