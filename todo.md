@@ -326,10 +326,10 @@
 
 ## مزامنة GitHub النهائية للبناء
 
-- [ ] فحص remote والفرع والنسخة الحالية في mohamed-helal
-- [ ] التأكد من وجود YOUTUBE_API_KEY كـSecret دون قراءة قيمته
-- [ ] تدقيق ملفات التصميم والكود والإعدادات غير السرية
-- [ ] التأكد من أن Workflow يمرر Secret إلى Expo وقت البناء
-- [ ] تشغيل TypeScript وVitest وLint وExpo config
-- [ ] رفع أي ملفات ناقصة إلى GitHub دون Secrets
-- [ ] التحقق من جاهزية Workflow للبناء والتوقف دون تشغيل APK تلقائيًا
+- [x] فحص remote والفرع والنسخة الحالية في mohamed-helal
+- [x] التأكد من وجود YOUTUBE_API_KEY كـSecret دون قراءة قيمته
+- [x] تدقيق ملفات التصميم والكود والإعدادات غير السرية
+- [x] التأكد من أن Workflow يمرر Secret إلى Expo وقت البناء
+- [x] تشغيل TypeScript وVitest وLint وExpo config
+- [x] رفع أي ملفات ناقصة إلى GitHub دون Secrets
+- [x] التحقق من جاهزية Workflow للبناء والتوقف دون تشغيل APK تلقائيًا
