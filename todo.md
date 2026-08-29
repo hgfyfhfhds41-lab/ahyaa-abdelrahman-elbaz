@@ -411,5 +411,5 @@
 - [x] ضمان إخفاء Splash بعد Mount مع fallback زمني آمن
 - [x] معالجة فشل API أو غياب المفتاح بحالة خطأ عربية دون Mock Data
 - [x] تشغيل TypeScript وVitest وLint وExpo Doctor
-- [ ] رفع التعديل إلى yasser وتشغيل Build Android جديد
-- [ ] توثيق نتيجة البناء وعدم ادعاء اختبار جهاز فعلي
+- [x] رفع التعديل إلى yasser وتشغيل Build Android جديد
+- [x] توثيق نتيجة البناء وعدم ادعاء اختبار جهاز فعلي
