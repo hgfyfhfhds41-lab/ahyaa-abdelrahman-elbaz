@@ -4,7 +4,6 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
-import * as SplashScreen from "expo-splash-screen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import "@/lib/_core/nativewind-pressable";
@@ -23,20 +22,10 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
-void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
-
-function AuthGate({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    // The first screen must never wait for OAuth, SecureStore, or network access.
-    void SplashScreen.hideAsync().catch(() => undefined);
-  }, []);
-
-  return <>{children}</>;
-}
 
 export default function RootLayout() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
@@ -95,16 +84,12 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider autoFetch={false}>
-            <AuthGate>
-          {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
-          {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
-          {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
-          <Stack screenOptions={{ headerShown: false }}>
+            {/* Keep native headers hidden so route segment names never appear. */}
+            <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="oauth/callback" />
             <Stack.Screen name="login" options={{ presentation: "fullScreenModal" }} />
           </Stack>
-            </AuthGate>
           </AuthProvider>
           <StatusBar style="light" />
         </QueryClientProvider>
